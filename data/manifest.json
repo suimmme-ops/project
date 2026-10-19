@@ -1,0 +1,17 @@
+{
+  "retrieved": "2026-10-19",
+  "files": {
+    "owid-codebook.csv": {
+      "sha256": "33b4f5e00efd58c7b83863f736beba1af4df946b43642b0400c3ec38648e0e8e",
+      "bytes": 24149
+    },
+    "temperature.csv": {
+      "sha256": "e87f5a9e01e2ea58db43870b916fb944559816722e2ed51e76ff53010ba321c6",
+      "bytes": 2147
+    },
+    "emissions.csv": {
+      "sha256": "9ab54fb89ee038ce477c0aa1df34a587d47bd5fb85942ae87296fb5614bff2ad",
+      "bytes": 1969301
+    }
+  }
+}

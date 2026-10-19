@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 브라우저 직접 접근은 모두 거부합니다.
+    // Streamlit 서버의 Admin SDK만 사용합니다. 서버에서 소유권/학급 권한을 검사합니다.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

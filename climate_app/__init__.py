@@ -1,0 +1,1 @@
+"""Climate Explorers classroom application."""
