@@ -1,11 +1,11 @@
 import plotly.graph_objects as go
 from .data import SCENARIOS, scenario_at
-INK='#183C3C'; TEAL='#087F75'; ORANGE='#D65338'
+INK='#203F2C'; TEAL='#27864C'; ORANGE='#D65338'
 
 def base(fig,ytitle,xrange=None,yrange=None):
-    fig.update_layout(height=400,margin=dict(l=15,r=25,t=25,b=25),paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='#FFFFFF',font=dict(family='sans-serif',size=14,color=INK),hovermode='x unified',legend=dict(orientation='h',y=1.12,x=0),dragmode=False)
+    fig.update_layout(height=420,margin=dict(l=15,r=25,t=55,b=25),paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='#FFFEF5',font=dict(family='Noto Sans KR, sans-serif',size=14,color=INK),hovermode='x unified',legend=dict(orientation='h',y=1.12,x=0),dragmode=False)
     fig.update_xaxes(title=None,showgrid=False,fixedrange=True,range=xrange,tickformat='d')
-    fig.update_yaxes(title=ytitle,gridcolor='#E7EEEB',zerolinecolor='#CEDBD6',fixedrange=True,range=yrange)
+    fig.update_yaxes(title=ytitle,gridcolor='#E5EAD8',zerolinecolor='#CEDBD6',fixedrange=True,range=yrange)
     return fig
 
 def temperature_chart(df,year,mode):
@@ -30,7 +30,7 @@ def countries_chart(df,codes,year,column='co2_per_capita'):
     all_values=df[df.iso_code.isin(codes)][column]
     hi=float(all_values.max())*1.1 if all_values.notna().any() else 1
     fig.add_vline(x=year,line_color='#AAC6BF',line_dash='dot')
-    return base(fig,'1人당 CO₂ 배출량 (톤/명/년)' if column=='co2_per_capita' else '온실가스 배출량 (백만 톤 CO₂eq/년)',[1750,2026],[0,hi])
+    return base(fig,'1인당 CO₂ 배출량 (톤/명/년)' if column=='co2_per_capita' else '온실가스 배출량 (백만 톤 CO₂eq/년)',[1750,2026],[0,hi])
 
 def future_chart(selected,year):
     fig=go.Figure()

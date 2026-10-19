@@ -13,6 +13,7 @@ streamlit run streamlit_app.py
 
 ## 주요 기능
 
+- 입체 자연 일러스트·새싹 캐릭터·삽화 카드·탐험 여권을 적용한 초록·크림색 UI
 - 4개 챕터·학습지 문항·독립적으로 유지되는 탐구 노트
 - 모든 그래프에 연결된 슬라이더: HadCRUT5 기온·10년 이동평균, OWID 온실가스 기여도·1인당 CO₂·전체 온실가스, IPCC 극한 고온·미래 시나리오
 - 수치와 출처를 근거로 담기, 2050년 생활 글쓰기, 불확실성·실천·성찰
@@ -20,13 +21,14 @@ streamlit run streamlit_app.py
 - 교사 이메일 허용 목록, 학급 코드 참여, 담당 학급 조회, 제출본과 초안 분리, CSV 수합, 피드백
 - HTML 탐구 노트 및 JSON 다운로드, 한글 CSV(BOM)
 
-![데이터로 여는 미래](docs/previews/future-graph.png)
+![입체 자연 이미지와 캐릭터를 더한 기후 탐험대](docs/previews/chapter1.png)
 
 ## 안내 문서
 
-- **[아주 쉬운 배포·Google 로그인·Firebase 설정](docs/DEPLOY_KO.md)**
+- **[선생님이 지금부터 할 일: 처음부터 차근차근](docs/TEACHER_START.md)** · [인쇄용 PDF](docs/TEACHER_START.pdf)
+- [Google 로그인·Firebase 기술 설정 상세](docs/DEPLOY_KO.md)
 - [데이터와 출처·포함 범위·현재 한계](docs/SOURCES.md)
-- [수업 계획·페르소나·사용자 스토리·발표 구성](docs/LESSON_PLAN.md)
+- **[6차시 상세 수업 지도안·발문·평가·4차시 압축안](docs/LESSON_PLAN.md)** · [인쇄용 PDF](docs/LESSON_PLAN.pdf)
 - [Secrets 입력 양식](.streamlit/secrets.toml.example)
 - [검증 결과](docs/VALIDATION.md)
 

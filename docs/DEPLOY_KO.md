@@ -1,5 +1,7 @@
 # 처음부터 따라 하는 Streamlit + Google 로그인 + Firebase 배포
 
+처음이라면 [선생님 시작 안내](TEACHER_START.md)를 순서대로 먼저 읽으세요. 이 문서는 설정의 기술적 세부사항과 오류 해결을 보완합니다.
+
 ## 먼저 이해하기
 
 이 앱의 화면과 실행 서버는 **Streamlit Community Cloud**, 학생 신원 확인은 **Google OIDC(Streamlit 내장 로그인)**, 영구 저장은 **Firebase Cloud Firestore**가 담당합니다. Firebase Hosting으로 배포하는 앱이 아닙니다. 이 구조에서는 Firebase Authentication을 별도로 활성화하거나 학생에게 Firebase 계정을 만들게 하지 않습니다. 학생은 Google 계정으로 로그인합니다.

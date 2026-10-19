@@ -11,6 +11,7 @@ import plotly.graph_objects as go
 from climate_app.data import temperature, emissions, observation, country_ranking, COUNTRIES, SCENARIOS, PERIODS, scenario_at
 from climate_app.charts import temperature_chart, countries_chart, future_chart, base
 from climate_app.backend import Store, AccessDenied, identity_from_claims, is_teacher
+from climate_app.presentation import hero, buddy, passport, leaf_mascot, feature_cards, mission_banner
 
 ROOT=Path(__file__).parent
 st.set_page_config(page_title='기후 탐험대 | 데이터로 여는 미래',page_icon='🌏',layout='wide',initial_sidebar_state='auto')
@@ -59,7 +60,13 @@ def esc(t):return html.escape(str(t))
 def callout(text,warm=False):st.markdown(f'<div class="callout {"warm" if warm else ""}">{text}</div>',unsafe_allow_html=True)
 def tag(text):st.markdown(f'<div class="section-tag">{text}</div>',unsafe_allow_html=True)
 def title(kicker,title,subtitle):
-    st.markdown(f'<div class="hero"><div><span class="pill">{esc(kicker)}</span><h1>{title}</h1><p>{subtitle}</p></div><div class="hero-art" aria-hidden="true"><div class="orbit"></div><div class="art-tag">OUR PLANET · OUR FUTURE ↗</div></div></div>',unsafe_allow_html=True)
+    st.markdown(hero(kicker,title,subtitle),unsafe_allow_html=True)
+    if 'CHAPTER' in kicker:
+        index=next((i for i in range(4) if f'{i+1:02}' in kicker),0)
+        st.markdown(passport(S.notes,index),unsafe_allow_html=True)
+
+def friend(text):st.markdown(buddy(text),unsafe_allow_html=True)
+def mission(heading,body):st.markdown(mission_banner(heading,body),unsafe_allow_html=True)
 def chart(fig,key):st.plotly_chart(fig,width='stretch',config={'displayModeBar':False,'scrollZoom':False},key=key)
 def note(key,label,placeholder='',height=125):
     widget='answer_'+key
@@ -103,7 +110,7 @@ QUESTION_LABELS={
 'future_before':'자료를 보기 전 나의 예상','future_scenario':'선택한 배출 시나리오','future_text':'2050년, 우리가 살게 될 세상','future_uncertainty':'예측에서 확실하지 않은 점','future_action':'우리가 지금 할 수 있는 일','reflection_learn':'새롭게 알게 된 점','reflection_feel':'느낀 점'}
 
 with st.sidebar:
-    st.markdown('<div class="brand">🌏 기후 탐험대<small>CLIMATE EXPLORERS LAB</small></div>',unsafe_allow_html=True)
+    st.markdown('<div class="brand"><span class="brand-icon">'+leaf_mascot()+'</span><div>기후 탐험대<small>GROW A BETTER TOMORROW</small></div></div>',unsafe_allow_html=True)
     st.caption('초등 5–6학년 · 데이터 기반 탐구')
     page=st.radio('나의 탐험 여정',CHAPTERS,key='chapter_nav',label_visibility='collapsed',on_change=lambda: S.update(utility='수업 화면'))
     done=sum(bool(S.notes.get(k,'')) for k in ['c1_connection','s3_thought','c3_limit','future_text'])
@@ -126,7 +133,13 @@ with st.sidebar:
         if st.button('Google로 시작하기',type='primary',width='stretch',disabled=not READY):st.login()
     st.button('☁ 학습 기록 저장',on_click=save,width='stretch')
     utility=st.radio('학습 도구',['수업 화면','나의 탐구 노트','교사 대시보드','자료와 출처'],label_visibility='collapsed',key='utility')
-    st.caption('관찰 → 비교 → 근거 → 미래 예상')
+    st.markdown('<div class="sidebar-note"><strong>생각이 자라는 탐험 🌱</strong>슬라이더로 발견한 수치를<br>내 생각의 근거로 담아 봐요.</div>',unsafe_allow_html=True)
+    if TEACHER or S.demo:
+        with st.expander('선생님을 위한 안내'):
+            st.link_button('처음부터 배포·수업 준비하기 ↗','https://github.com/suimmme-ops/project/blob/codex/climate-explorers/docs/TEACHER_START.md')
+            st.link_button('6차시 상세 수업 지도안 ↗','https://github.com/suimmme-ops/project/blob/codex/climate-explorers/docs/LESSON_PLAN.md')
+            st.download_button('교사 시작 안내 PDF',(ROOT/'docs/TEACHER_START.pdf').read_bytes(),'기후탐험대_교사시작안내.pdf','application/pdf',key='sidebar_start_pdf',width='stretch')
+            st.download_button('6차시 수업 지도안 PDF',(ROOT/'docs/LESSON_PLAN.pdf').read_bytes(),'기후탐험대_6차시수업지도안.pdf','application/pdf',key='sidebar_lesson_pdf',width='stretch')
 
 if not USER and not S.demo:
     title('WELCOME · 작은 발견, 커다란 변화','데이터를 움직이면,<br>미래가 보인다.','슬라이더로 기후의 변화를 살펴보고, 자료를 근거로 2050년의 삶을 상상해 보세요.')
@@ -141,6 +154,15 @@ if not USER and not S.demo:
         with st.container(border=True):
             st.markdown('**4개의 질문으로 떠나는 탐험**')
             st.write('① 지구는 어떤 신호를 보내고 있을까?\n\n② 데이터를 보면 무엇을 알 수 있을까?\n\n③ 1.5℃는 왜 중요할까?\n\n④ 우리가 살 2050년은 어떤 모습일까?')
+    friend('안녕! 나는 탐험 친구 새봄이야. 그래프에서 찾은 숫자가 너의 멋진 생각을 지지해 줄 거야.')
+    st.markdown(passport(S.notes),unsafe_allow_html=True)
+    st.subheader('어떤 탐험부터 시작할까요?')
+    for i,col in enumerate(st.columns(4)):
+        with col:
+            def enter_chapter(index=i):
+                S.demo=True;S.chapter_nav=CHAPTERS[index];S.utility='수업 화면'
+            st.button(['01 · 지구의 신호','02 · 데이터의 단서','03 · 1.5℃의 의미','04 · 2050년의 하루'][i],key=f'welcome_chapter_{i}',width='stretch',on_click=enter_chapter)
+    st.caption('로그인 없이 시작한 탐험은 체험 모드예요. 실제 제출은 Google 로그인과 학급 참여 후 사용할 수 있어요.')
     st.stop()
 
 if USER and not S.demo and not TEACHER and not S.classroom:
@@ -178,6 +200,10 @@ if utility=='나의 탐구 노트':
 
 if utility=='교사 대시보드':
     title('TEACHER STUDIO','생각이 모이는<br>우리 반 탐구실.','학생들의 제출 상태와 미래 예측 글을 확인하고, 근거를 발전시키는 피드백을 남겨 주세요.')
+    with st.expander('처음 사용하시나요? 교사용 준비 안내'):
+        st.write('① Streamlit에서 체험 배포 → ② Google·Firebase 설정 → ③ 교사 로그인 → ④ 학급 생성 → ⑤ 학생 계정으로 제출 시험 → ⑥ 실제 수업 순서로 준비하세요.')
+        st.link_button('클릭 순서까지 상세한 시작 안내 ↗','https://github.com/suimmme-ops/project/blob/codex/climate-explorers/docs/TEACHER_START.md')
+        st.link_button('차시별 발문·활동·평가 지도안 ↗','https://github.com/suimmme-ops/project/blob/codex/climate-explorers/docs/LESSON_PLAN.md')
     if not TEACHER:
         st.info('실제 학급은 사전에 등록된 교사 Google 계정으로만 확인할 수 있습니다.')
         if S.demo:
@@ -242,15 +268,17 @@ if page==CHAPTERS[0]:
     title('CHAPTER 01 · OBSERVE','지구가 보내는 신호,<br>우리는 듣고 있을까?','홍수, 폭염, 산불. 달라지는 자연의 모습에서 사람들의 생활로 이어지는 연결 고리를 찾아보세요.')
     tag('01 / 현실에서 발견하기')
     st.subheader('멀리 있는 이야기일까요?')
-    cases=[('🌧️','물에 잠긴 일상','강한 비와 홍수','따뜻한 공기는 더 많은 수증기를 머금을 수 있어요. 비가 강해지면 배수 시설과 지형에 따라 큰 피해가 생길 수 있어요.'),('☀️','뜨거워진 운동장','폭염과 건강','평균 기온이 높아지면 극심한 더위가 더 자주, 더 강하게 나타날 수 있어요. 야외에서 일하거나 뛰어노는 사람은 어떤 영향을 받을까요?'),('🌲','메마른 숲의 경고','산불 위험','덥고 건조한 조건은 산불 위험을 키울 수 있어요. 실제 불이 나는 데에는 불씨, 바람, 숲의 관리 등 여러 요인이 함께 작용해요.')]
-    for col,(icon,heading,sub,text) in zip(st.columns(3),cases):
-        with col:
-            with st.container(border=True):
-                st.markdown(f'<div class="case-icon">{icon}</div>',unsafe_allow_html=True);st.subheader(heading);st.caption(sub);st.write(text)
+    st.markdown(feature_cards([
+        ('rain','OBSERVE 01 · 홍수','물에 잠긴 일상','따뜻한 공기는 더 많은 수증기를 머금을 수 있어요. 강한 비는 지형과 배수 시설에 따라 큰 피해로 이어질 수 있어요.'),
+        ('sun','OBSERVE 02 · 폭염','뜨거워진 운동장','극심한 더위가 더 자주, 강하게 나타나면 야외에서 일하거나 뛰어노는 사람들의 생활은 어떻게 달라질까요?'),
+        ('forest','OBSERVE 03 · 산불','메마른 숲의 경고','덥고 건조한 조건은 산불 위험을 키울 수 있어요. 불씨, 바람, 숲 관리 등 여러 요인도 함께 살펴야 해요.')
+    ]),unsafe_allow_html=True)
+    friend('사진과 이야기를 읽으며 관찰한 사실과 내 해석을 나눠 보자. 한 번의 사건보다 오랜 기록이 더 많은 단서를 알려 줘.')
     callout('탐험가의 약속 · 한 번의 재난만으로 기후변화를 판단하지 않아요. 오랜 기록과 여러 자료를 함께 확인해요.')
     with st.expander('현실 사례를 원문 자료와 연결하기'):
         st.markdown('- [NASA: 2022년 파키스탄 홍수 위성사진](https://earthobservatory.nasa.gov/images/150279/devastating-floods-in-pakistan)\n- [WMO: 유럽 기후 현황 2023](https://wmo.int/publication-series/european-state-of-climate-2023)\n- [기존 수업 웹사이트](https://climate-action-project.netlify.app/)')
         st.caption('사건의 피해는 기후뿐 아니라 시설, 지형, 인구, 대비 수준에도 영향을 받아요.')
+    mission('한 가지 현상을, 누군가의 생활과 연결하기','홍수·폭염·산불 중 하나를 골라 어떤 변화가 누구에게 영향을 주는지 설명해 보세요.')
     tag('02 / 나의 첫 번째 생각')
     note('c1_flood','지구가 따뜻해지면 왜 강한 비와 홍수가 늘어날 수 있을까요?','기온 → 수증기 → 강한 비의 흐름으로 설명해 보세요.')
     note('c1_heat','폭염과 산불은 어떤 변화와 연결되어 있을까요?')
@@ -259,6 +287,7 @@ if page==CHAPTERS[0]:
 
 elif page==CHAPTERS[1]:
     title('CHAPTER 02 · INVESTIGATE','숫자 속에 숨은<br>기후의 단서를 찾아라.','시간을 움직이고, 나라를 비교하고, 수치가 담긴 문장으로 설명해 보세요. 데이터가 나의 생각을 뒷받침하는 근거가 됩니다.')
+    friend('수치를 읽을 땐 세 가지를 확인해! 언제의 자료인지, 단위가 무엇인지, 무엇과 비교하는지.')
     step=st.segmented_control('학습지 탐구 단계',['STEP 1 기온','STEP 2 원인','STEP 3 1인당','STEP 4 국가 전체'],default='STEP 1 기온',key='step') or 'STEP 1 기온'
     if step=='STEP 1 기온':
         tag('STEP 01 / 점점 더 뜨거워지는 지구')
@@ -366,6 +395,7 @@ elif page==CHAPTERS[1]:
 elif page==CHAPTERS[2]:
     title('CHAPTER 03 · CONNECT','작은 숫자 1.5℃,<br>커다란 삶의 차이.','매일의 날씨와 전 지구 평균 기온은 다릅니다. 지구의 에너지와 생활의 변화를 연결해 보세요.')
     callout('1.5℃는 절벽처럼 안전과 위험을 나누는 선이 아니에요. 이미 피해는 나타나고 있으며, 온난화를 조금이라도 줄일 때마다 위험을 줄일 수 있어요.')
+    friend('오늘의 날씨와 오랜 기간의 기후는 달라. 작은 평균 변화가 생활에 어떤 차이를 만드는지 함께 살펴보자.')
     tag('01 / 1℃의 진짜 의미')
     a,b=st.columns(2)
     with a:
@@ -395,6 +425,7 @@ elif page==CHAPTERS[2]:
 
 else:
     title('CHAPTER 04 · IMAGINE','2050년의 하루,<br>어떤 미래를 쓸까요?','미래는 한 가지로 정해져 있지 않아요. 배출 경로를 비교하고, 근거가 담긴 미래 이야기를 완성해 보세요.')
+    friend('미래 기자가 되어 볼까? 자료가 알려 주는 사실과 네가 상상한 생활 모습을 구분하면 더 설득력 있는 이야기가 돼.')
     note('future_before','자료를 보기 전, 내가 상상한 2050년은 어떤 모습인가요?',height=100)
     tag('01 / 같은 지구, 세 가지 갈림길')
     with st.container(border=True):
@@ -410,10 +441,13 @@ else:
         pin(f'IPCC AR6 표 SPM.1 · {SCENARIOS[scenario]["id"]} {year}년 무렵: +{v:.2f}℃ (범위 {lo:.2f}–{hi:.2f}℃); '+(PERIODS[year]+' 기간 평균' if year in PERIODS else '교육용 보간'),'pin_future')
     source('IPCC AR6 WGI (2021) · 표 SPM.1','https://www.ipcc.ch/report/ar6/wg1/chapter/summary-for-policymakers/')
     st.subheader('🍎 2050년, 우리가 살게 될 세상')
-    for col,(icon,t,text) in zip(st.columns(3),[('🍎','먹거리와 농업','기온과 강수 변화는 작물 재배와 수확에 영향을 줄 수 있어요. 사과를 기르는 지역이나 먹거리 가격은 어떻게 달라질까요?'),('🏫','학교와 일상','더운 날의 등하교, 운동장 활동, 냉방과 전력 사용을 떠올려 보세요. 사람들은 어떻게 적응할까요?'),('🌊','자연과 이웃','바다, 해안 마을, 생물의 서식지가 받는 영향을 생각해 보세요. 누구에게 도움이 더 필요할까요?')]):
-        with col:
-            with st.container(border=True):st.subheader(icon+' '+t);st.write(text)
+    st.markdown(feature_cards([
+        ('apple','FUTURE 01 · 먹거리','미래의 식탁','기온과 강수 변화는 작물 재배와 수확에 영향을 줄 수 있어요. 사과를 기르는 지역과 먹거리 가격은 어떻게 달라질까요?'),
+        ('school','FUTURE 02 · 일상','학교에서 보내는 하루','등하교, 운동장 활동, 냉방과 전력 사용을 떠올려 보세요. 사람들은 더운 날의 생활에 어떻게 적응할까요?'),
+        ('ocean','FUTURE 03 · 이웃','바다와 함께 살아가기','해안 마을과 생물의 서식지를 생각해 보세요. 변화하는 환경 속에서 누구에게 어떤 도움이 더 필요할까요?')
+    ]),unsafe_allow_html=True)
     callout('이야기의 주인공은 여러분이에요. ‘자료로 확인한 사실’과 ‘내가 예상한 생활 모습’을 구분해서 써 보세요. 특정 시나리오만으로 2050년 우리 동네의 정확한 날씨나 사과 생산량을 알 수는 없어요.')
+    mission('2050년의 하루를, 근거가 있는 이야기로','선택한 시나리오의 수치 한 가지와 생활의 변화를 연결하고, 확실하지 않은 점도 함께 써 보세요.')
     tag('02 / 미래 기자가 되어 글쓰기')
     st.write('**미션:** 한 가지 배출 경로를 골라 2050년의 하루를 써 보세요. 자료의 수치, 생활의 변화, 그 이유, 우리가 할 수 있는 일을 담아 주세요.')
     future_choice=st.selectbox('내 글의 배출 시나리오',list(SCENARIOS),index=list(SCENARIOS).index(S.notes.get('future_scenario','강력한 감축')) if S.notes.get('future_scenario') in SCENARIOS else 0)
@@ -436,4 +470,4 @@ else:
     if not ok:st.caption('제출하려면 예상 글 80자 이상, 근거 1개 이상, 확실하지 않은 점을 작성해 주세요.')
     st.download_button('내 기록 먼저 내려받기',notebook_html().encode(),'나의_기후_탐구노트.html','text/html')
 
-st.markdown('<div class="footer">CLIMATE EXPLORERS LAB · 관찰한 사실에서, 가능한 미래로. &nbsp; 데이터와 출처는 왼쪽 메뉴에서 확인하세요.</div>',unsafe_allow_html=True)
+st.markdown('<div class="footer">기후 탐험대 🌱 · 작은 발견을 키워, 더 나은 내일로. &nbsp; 데이터와 출처는 왼쪽 메뉴에서 확인하세요.</div>',unsafe_allow_html=True)
