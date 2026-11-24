@@ -25,7 +25,10 @@ export function Globe({ burstKey, onBurst }: Props) {
         handle.current = mod.mountSnowGlobe(host.current, {
           mobile,
           reducedMotion,
-          modelUrl: import.meta.env.BASE_URL + 'models/gingerbread_cookie.glb',
+          modelUrl: [
+            import.meta.env.BASE_URL + 'models/gingerbread_cookie.glb',
+            import.meta.env.BASE_URL + 'models/gingerbread_cookie.gltf.json',
+          ],
           // 쿠키까지 준비된 뒤에 정적 그림을 3D로 바꿉니다.
           onCookie: (source) => {
             if (cancelled) return;
