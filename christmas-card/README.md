@@ -14,6 +14,9 @@ npm run build      # dist/ 에 배포용 결과물 생성
 npm run preview    # 빌드 결과 미리보기
 ```
 
+빌드한 `dist/index.html`은 더블클릭해 파일로 열어도 동작합니다(인터넷 없이 시연 가능).
+파일로 열 때는 브라우저가 파일 읽기를 막기 때문에, 3D 모델과 카드용 쿠키 이미지를 `offline-assets.js`(빌드 때 자동 생성)에서 읽습니다.
+
 `?no3d`를 주소 뒤에 붙이면(예: `http://localhost:5173/?no3d`) 3D를 쓸 수 없는 상황을 시연할 수 있습니다.
 
 ## Netlify 배포(요청 시)

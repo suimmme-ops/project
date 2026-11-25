@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+import { base64ToArrayBuffer, isFileProtocol, offlineAssets } from './offline';
 
 /**
  * url 목록을 순서대로 시도합니다. 기본은 .glb이고, .glb를 올릴 수 없는 곳(예: claude.ai 미리보기)에는
@@ -17,7 +18,18 @@ export async function loadCookieModel(urls: string | string[], height: number): 
   const list = Array.isArray(urls) ? urls : [urls];
   let gltf: Awaited<ReturnType<GLTFLoader['loadAsync']>> | null = null;
   let lastErr: unknown = null;
-  for (const url of list) {
+  // 파일로 연 경우: fetch가 막히므로 스크립트로 받은 GLB 데이터를 직접 해석합니다.
+  if (isFileProtocol) {
+    const assets = await offlineAssets();
+    if (assets) {
+      try {
+        gltf = await loader.parseAsync(base64ToArrayBuffer(assets.glb), './');
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+  }
+  for (const url of gltf ? [] : list) {
     try {
       gltf = await loader.loadAsync(url);
       break;

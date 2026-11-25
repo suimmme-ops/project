@@ -1,5 +1,6 @@
 import { cardText, themes, type ThemeId } from '../data/content';
 import { drawCookie } from './drawCookie2d';
+import { offlineAssets } from './offline';
 
 export type CardState = {
   recipient: string;
@@ -27,7 +28,7 @@ let cookieImg: HTMLImageElement | null = null;
 let cookieLoad: Promise<HTMLImageElement | null> | null = null;
 export function loadCookieImage(): Promise<HTMLImageElement | null> {
   if (!cookieLoad) {
-    cookieLoad = new Promise((resolve) => {
+    cookieLoad = offlineAssets().then((assets) => new Promise<HTMLImageElement | null>((resolve) => {
       const img = new Image();
       img.decoding = 'async';
       img.onload = () => {
@@ -38,8 +39,9 @@ export function loadCookieImage(): Promise<HTMLImageElement | null> {
         console.warn('[카드] 쿠키 이미지를 불러오지 못해 벡터 쿠키로 그립니다.');
         resolve(null);
       };
-      img.src = import.meta.env.BASE_URL + 'cookie-card.png';
-    });
+      // 파일로 연 경우 data URI를 써야 캔버스 저장(toBlob)이 보안 오류 없이 됩니다.
+      img.src = assets?.cookiePng ?? import.meta.env.BASE_URL + 'cookie-card.png';
+    }));
   }
   return cookieLoad;
 }

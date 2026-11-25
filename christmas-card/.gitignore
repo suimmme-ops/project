@@ -7,3 +7,5 @@ preview-build
 
 # 상위 저장소의 Python용 lib/ 무시 규칙에서 이 프로젝트 소스는 제외
 !src/lib/
+# 빌드 때 자동 생성
+public/offline-assets.js
